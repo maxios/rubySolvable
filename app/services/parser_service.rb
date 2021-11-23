@@ -1,4 +1,4 @@
-STRATEGY_TOKEN = {'dollar' => "$", 'percent' => "%"}.freeze
+STRATEGY_TOKEN = {'dollar' => " $ ", 'percent' => " % "}.freeze
 
 class ParserService
   def initialize(text, strategy)
@@ -9,12 +9,11 @@ class ParserService
   end
 
   def rows
-    @rows ||= @text.split("\n")[1..].map { |row| row.gsub(' ', '').split(@separator) }
+    @rows ||= @text.split("\n")[1..].map { |row| row.split(@separator) }
   end
 
   def header
     @header ||= @text.split("\n")[0]
-                     .gsub(' ', '')
                      .split(@separator)
   end
 end
