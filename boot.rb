@@ -1,1 +1,5 @@
+require 'date'
+require './app/helpers/formatter.rb'
 require './app/people_controller.rb'
+require './app/services/parser_service.rb'
+require './app/services/data_manager.rb'
