@@ -1,5 +1,5 @@
 class DataManager
-  attr_reader :header, :rows
+  attr_reader :header, :rows, :cursor
   def initialize(data)
     @header = data.header.map &:to_sym
     @rows = data.rows
@@ -8,7 +8,7 @@ class DataManager
 
   def by_columns(*cols)
     data = []
-    cols.each { |col|  data << by_column(col) }
+    cols.each { |col|  data << by_column(col).cursor }
     @cursor = data.transpose
     self
   end
@@ -16,7 +16,8 @@ class DataManager
   def by_column(column)
     column_index = @header.index(column)
 
-    @rows.map { |row| row[column_index] }
+    @cursor = @rows.map { |row| row[column_index] }
+    self
   end
 
   def sort_by(order)
@@ -31,6 +32,7 @@ class DataManager
 
     @header.delete_at(column_index)
     @rows.each { |row| row.delete_at(column_index) }
+    self
   end
 
   def merge(data)
@@ -38,7 +40,7 @@ class DataManager
     @header.concat additional_header.map &:to_sym
 
     additional_data = []
-    @header.each { |h| additional_data << data.by_column(h) }
+    @header.each { |h| additional_data << data.by_column(h).cursor }
     additional_data = additional_data.transpose
     @rows.concat additional_data
     self
@@ -55,9 +57,10 @@ class DataManager
   end
 
   def normalize
-    @cursor.map do |row|
+    @cursor.map! do |row|
       row.join(', ')
     end
+    self
   end
 
   def save!

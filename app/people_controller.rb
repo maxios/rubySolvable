@@ -5,21 +5,17 @@ class PeopleController
     @parser = ParserService
     @data_manager = DataManager
 
-    extract_dollar_format
-    extract_percent_format
+    parse_dollar_format
+    parse_percent_format
     combine_data
   end
 
-  def extract_dollar_format
-    @dollar_format ||= @parser.new(params[:dollar_format], "dollar")
+  def parse_dollar_format
+    @dollar_format ||= @parser.new(@params[:dollar_format], "dollar")
   end
 
-  def extract_percent_format
-    @percent_format ||= @parser.new(params[:percent_format], "percent")
-  end
-
-  def combined_headers
-    @dollar_format.header | @percent_format.header
+  def parse_percent_format
+    @percent_format ||= @parser.new(@params[:percent_format], "percent")
   end
 
   def combine_data
@@ -32,12 +28,10 @@ class PeopleController
 
   def normalize
     @data.by_columns(:first_name, :city, :birthdate)
-        .sort_by(:first_name)
-        .format_by_column(:birthdate, method(:format_birthdate))
-        .normalize
+         .sort_by(:first_name)
+         .format_by_column(:birthdate, method(:format_birthdate))
+         .normalize
+         .cursor
   end
 
-  private
-
-  attr_reader :params
 end
